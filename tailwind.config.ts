@@ -14,38 +14,70 @@ export default {
     },
     extend: {
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
+        /* Google Flights Color System */
+        google: {
+          blue: "hsl(var(--google-blue))",
+          "blue-dark": "hsl(var(--google-blue-dark))",
+          "blue-light": "hsl(var(--google-blue-light))",
+          green: "hsl(var(--google-green))",
+          red: "hsl(var(--google-red))",
+          yellow: "hsl(var(--google-yellow))",
+        },
+        
+        /* Base System */
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        
+        /* Text Colors */
+        text: {
+          primary: "hsl(var(--text-primary))",
+          secondary: "hsl(var(--text-secondary))",
+          tertiary: "hsl(var(--text-tertiary))",
+          inverse: "hsl(var(--text-inverse))",
+        },
+        
+        /* Surface Colors */
+        surface: {
+          DEFAULT: "hsl(var(--surface))",
+          container: "hsl(var(--surface-container))",
+          "container-low": "hsl(var(--surface-container-low))",
+          "container-high": "hsl(var(--surface-container-high))",
+        },
+        
+        /* Primary System */
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          hover: "hsl(var(--primary-hover))",
         },
+        
+        /* Secondary System */
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
+          hover: "hsl(var(--secondary-hover))",
         },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
+        
+        /* Interactive States */
+        hover: "hsl(var(--hover))",
+        selected: "hsl(var(--selected))",
+        
+        /* Border and Input */
+        border: {
+          DEFAULT: "hsl(var(--border))",
+          hover: "hsl(var(--border-hover))",
         },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
+        input: {
+          DEFAULT: "hsl(var(--input))",
+          border: "hsl(var(--input-border))",
+          "border-focus": "hsl(var(--input-border-focus))",
         },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
-        },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
-        },
-        card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
+        
+        /* Flight Specific */
+        flight: {
+          card: "hsl(var(--flight-card))",
+          price: "hsl(var(--flight-price))",
+          emission: "hsl(var(--flight-emission))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
@@ -59,9 +91,17 @@ export default {
         },
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        lg: "var(--radius-lg)",
+        DEFAULT: "var(--radius)",
+        md: "var(--radius)",
+        sm: "var(--radius-sm)",
+      },
+      
+      boxShadow: {
+        sm: "var(--shadow-sm)",
+        DEFAULT: "var(--shadow-md)",
+        md: "var(--shadow-md)",
+        lg: "var(--shadow-lg)",
       },
       keyframes: {
         "accordion-down": {
