@@ -9,11 +9,14 @@ import {
 
 export function FlightFilters() {
   return (
-    <div className="flex items-center gap-3 py-4 px-6 border-b border-border bg-surface">
+    <div className="flex items-center mx-auto max-w-6xl gap-1 py-1 px-6 border-b border-border ">
       {/* All filters */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="border-border hover:border-border-hover text-text-primary rounded-full px-4 py-2 h-auto">
+          <Button
+            variant="outline"
+            className="border-border hover:border-border-hover text-text-primary  px-4 py-2 h-auto"
+          >
             <Filter className="h-4 w-4 mr-2" />
             All filters
           </Button>
@@ -30,7 +33,10 @@ export function FlightFilters() {
       {/* Stops */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="border-border hover:border-border-hover text-text-primary rounded-full px-4 py-2 h-auto">
+          <Button
+            variant="outline"
+            className="border-border hover:border-border-hover text-text-primary rounded-lg px-4 py-2 h-auto"
+          >
             Stops
             <ChevronDown className="h-4 w-4 ml-2" />
           </Button>
@@ -46,7 +52,10 @@ export function FlightFilters() {
       {/* Airlines */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="border-border hover:border-border-hover text-text-primary rounded-full px-4 py-2 h-auto">
+          <Button
+            variant="outline"
+            className="border-border hover:border-border-hover text-text-primary rounded-lg px-4 py-2 h-auto"
+          >
             Airlines
             <ChevronDown className="h-4 w-4 ml-2" />
           </Button>
@@ -63,7 +72,10 @@ export function FlightFilters() {
       {/* Bags */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="border-border hover:border-border-hover text-text-primary rounded-full px-4 py-2 h-auto">
+          <Button
+            variant="outline"
+            className="border-border hover:border-border-hover text-text-primary rounded-lg px-4 py-2 h-auto"
+          >
             Bags
             <ChevronDown className="h-4 w-4 ml-2" />
           </Button>
@@ -78,7 +90,10 @@ export function FlightFilters() {
       {/* Price */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="border-border hover:border-border-hover text-text-primary rounded-full px-4 py-2 h-auto">
+          <Button
+            variant="outline"
+            className="border-border hover:border-border-hover text-text-primary rounded-lg px-4 py-2 h-auto"
+          >
             Price
             <ChevronDown className="h-4 w-4 ml-2" />
           </Button>
@@ -94,7 +109,10 @@ export function FlightFilters() {
       {/* Times */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="border-border hover:border-border-hover text-text-primary rounded-full px-4 py-2 h-auto">
+          <Button
+            variant="outline"
+            className="border-border hover:border-border-hover text-text-primary rounded-lg px-4 py-2 h-auto"
+          >
             Times
             <ChevronDown className="h-4 w-4 ml-2" />
           </Button>
@@ -110,7 +128,10 @@ export function FlightFilters() {
       {/* Emissions */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="border-border hover:border-border-hover text-text-primary rounded-full px-4 py-2 h-auto">
+          <Button
+            variant="outline"
+            className="border-border hover:border-border-hover text-text-primary rounded-lg px-4 py-2 h-auto"
+          >
             Emissions
             <ChevronDown className="h-4 w-4 ml-2" />
           </Button>
@@ -125,7 +146,10 @@ export function FlightFilters() {
       {/* Connecting airports */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="border-border hover:border-border-hover text-text-primary rounded-full px-4 py-2 h-auto">
+          <Button
+            variant="outline"
+            className="border-border hover:border-border-hover text-text-primary rounded-lg px-4 py-2 h-auto"
+          >
             Connecting airports
             <ChevronDown className="h-4 w-4 ml-2" />
           </Button>
@@ -140,7 +164,10 @@ export function FlightFilters() {
       {/* Duration */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="border-border hover:border-border-hover text-text-primary rounded-full px-4 py-2 h-auto">
+          <Button
+            variant="outline"
+            className="border-border hover:border-border-hover text-text-primary rounded-lg px-4 py-2 h-auto"
+          >
             Duration
             <ChevronDown className="h-4 w-4 ml-2" />
           </Button>
