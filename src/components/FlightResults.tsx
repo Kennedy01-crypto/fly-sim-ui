@@ -1,4 +1,4 @@
-import { ArrowUpDown, ChevronDown, Leaf } from "lucide-react";
+import { ArrowUpDown, ChevronDown, Info, Leaf } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface FlightCardProps {
@@ -139,9 +139,9 @@ export function FlightResults() {
       {/* Results Header */}
       <div className="flex items-center justify-between py-4 border-b border-border">
         <div>
-          <h2 className="text-xl font-medium text-text-primary">Returning flights</h2>
+          <h2 className="text-xl font-medium text-text-primary">Top departing flights</h2>
           <p className="text-sm text-text-secondary">
-            Prices include required taxes + fees for 1 adult. Optional charges and bag fees may apply.
+            Ranked based on price and convenience <Info className="inline h-4 w-4 ml-1" />  Prices include required taxes + fees for 1 adult. Optional charges and bag fees may apply.
           </p>
         </div>
         
