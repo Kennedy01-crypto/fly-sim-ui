@@ -1,5 +1,6 @@
 import { Search, Menu, GridIcon, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function GoogleHeader() {
   return (
@@ -46,6 +47,7 @@ export function GoogleHeader() {
 
       {/* Right side - User controls */}
       <div className="flex items-center gap-2">
+        <ThemeToggle />
         <Button variant="ghost" size="sm" className="p-2">
           <GridIcon className="h-5 w-5 text-text-secondary" />
         </Button>
