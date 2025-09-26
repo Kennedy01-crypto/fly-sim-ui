@@ -48,11 +48,45 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   };
 
-  // Example fetcher for searchFlights
-  const searchFlights = async (params: any) => {
+  // Fetcher for searchFlights
+  const searchFlights = async (params: {
+    originSkyId: string;
+    destinationSkyId: string;
+    departureDate: string; // Format: YYYY-MM-DD
+    returnDate?: string; // Format: YYYY-MM-DD (optional)
+    cabinClass?: string;
+    adults?: number;
+    children?: number;
+    infants?: number;
+    sortBy?: string;
+    currency?: string;
+    market?: string;
+    countryCode?: string;
+  }) => {
     return apiCall(async () => {
-      // TODO: implement actial api call
-      return {};
+      const url =
+        "https://sky-scrapper.p.rapidapi.com/api/v2/flights/searchFlights";
+      const response = await axios.get(url, {
+        params: {
+          originSkyId: params.originSkyId,
+          destinationSkyId: params.destinationSkyId,
+          cabinClass: params.cabinClass,
+          adults: params.adults,
+          children: params.children,
+          infants: params.infants,
+          sortBy: params.sortBy || "best",
+          currency: params.currency || "USD",
+          market: params.market || "en-US",
+          countryCode: params.countryCode || "US",
+          departureDate: params.departureDate,
+          returnDate: params.returnDate,
+        },
+        headers: {
+          "X-RapidAPI-Key": import.meta.env.VITE_RAPID_API_KEY,
+          "X-RapidAPI-Host": "sky-scrapper.p.rapidapi.com",
+        },
+      });
+      return response.data;
     });
   };
 
@@ -60,7 +94,7 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
   const searchAirport = (query: string, locale = "en-US") => {
     return apiCall(async () => {
       const url =
-        "https://sky-scrapper.p.rapidapi.com/api/v1/flights/searchAirport"; //https://sky-scrapper.p.rapidapi.com/api/vi/flights/airport/search
+        "https://sky-scrapper.p.rapidapi.com/api/v1/flights/searchAirport"; 
       const response = await axios.get(url, {
         params: { query, locale },
         headers: {
