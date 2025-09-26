@@ -1,5 +1,13 @@
 import { useState } from "react";
-import { ArrowLeftRight, Calendar, ChevronDown, Users } from "lucide-react";
+import {
+  ArrowLeftRight,
+  Calendar,
+  ChevronDown,
+  LocateFixed,
+  MapPin,
+  Users,
+  X,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -14,9 +22,23 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { format } from "date-fns";
 
 export function FlightSearchForm() {
   const [tripType, setTripType] = useState("round-trip");
+  const [multiCitySegments, setMultiCitySegments] = useState([
+    {
+      from: "Nairobi",
+      to: "Cape Town",
+      date: null as Date | null,
+    },
+    {
+      from: "Cape Town",
+      to: "Paris",
+      date: null as Date | null,
+    },
+  ]);
+
   const [passengers, setPassengers] = useState({
     adults: 1,
     children: 0,
@@ -25,6 +47,33 @@ export function FlightSearchForm() {
   const [travelClass, setTravelClass] = useState("economy");
   const [fromLocation, setFromLocation] = useState("Nairobi");
   const [toLocation, setToLocation] = useState("Paris");
+  const [departureDate, setDepartureDate] = useState<Date | null>(null);
+  const [returnDate, setReturnDate] = useState<Date | null>(null);
+  // add segment
+  const addSegment = () => {
+    setMultiCitySegments([
+      ...multiCitySegments,
+      { from: "", to: "", date: null },
+    ]);
+  };
+  // Handler to remove a segment
+  const removeSegment = (idx: number) => {
+    setMultiCitySegments(multiCitySegments.filter((_, i) => i !== idx));
+  };
+  const updateSegment = (
+    idx: number,
+    field: "from" | "to" | "date",
+    value: string | Date | null
+  ) => {
+    setMultiCitySegments(
+      multiCitySegments.map((seg, i) =>
+        i === idx ? { ...seg, [field]: value } : seg
+      )
+    );
+  };
+  const formatDate = (date: Date | null) => {
+    return date ? format(date, "EEE, MMM d") : "Select date";
+  };
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-4 bg-surface rounded-md shadow-sm border border-border m-4">
@@ -277,82 +326,229 @@ export function FlightSearchForm() {
         </div>
       </div>
 
-      {/* Main Search Form */}
-      <div className="flex items-center gap-4">
-        {/* From Location */}
-        <div className="flex-1">
-          <div className="relative">
-            <Input
-              value={fromLocation}
-              onChange={(e) => setFromLocation(e.target.value)}
-              placeholder="Where from?"
-              className="h-14 px-4 text-base border-input-border focus:border-input-border-focus rounded-sm"
-            />
-            <div className="absolute top-2 left-4 text-xs text-text-secondary">
-              Where from?
+      {/* Multi-city Segments */}
+      {tripType === "multi-city" ? (
+        <div className="flex flex-col gap-4">
+          {multiCitySegments.map((seg, idx) => (
+            <div className="flex items-center gap-4" key={idx}>
+              {/* From Location */}
+              <div className="flex-1">
+                <div className="relative">
+                  <Input
+                    value={seg.from}
+                    onChange={(e) => updateSegment(idx, "from", e.target.value)}
+                    className="h-14 px-4 text-base border-input-border focus:border-input-border-focus rounded-sm"
+                  />
+                  <div className="absolute top-4 right-4 text-xs text-text-secondary">
+                    <LocateFixed />
+                  </div>
+                </div>
+              </div>
+              {/* swap button */}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="p-2 rounded-full hover:bg-hover"
+                onClick={() => {
+                  setMultiCitySegments(
+                    multiCitySegments.map((s, i) =>
+                      i === idx ? { ...s, from: s.to, to: s.from } : s
+                    )
+                  );
+                }}
+              >
+                <ArrowLeftRight className="h-5 w-5 text-text-secondary" />
+              </Button>
+              {/* To Location */}
+              <div className="flex-1">
+                <div className="relative">
+                  <Input
+                    value={seg.to}
+                    onChange={(e) => updateSegment(idx, "to", e.target.value)}
+                    className="h-14 px-4 text-base border-input-border focus:border-input-border-focus rounded-sm"
+                  />
+                  <div className="absolute top-4 right-4 text-xs text-text-secondary">
+                    <MapPin />
+                  </div>
+                </div>
+              </div>
+              {/* Departure Date */}
+              <div className="flex-1">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="h-14 w-full justify-start text-left font-normal border-input-border hover:border-border-hover rounded-sm"
+                    >
+                      <Calendar className="mr-2 h-4 w-4 text-text-secondary" />
+                      <div className="flex flex-col items-start">
+                        <div className="text-xs text-text-secondary">Date</div>
+                        <div className="text-sm text-text-primary">
+                          {formatDate(seg.date)}
+                        </div>
+                      </div>
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-4 bg-surface">
+                    <div className="text-sm text-text-secondary">
+                      <input
+                        type="date"
+                        className="bg-surface"
+                        value={seg.date ? format(seg.date, "yyyy-MM-dd") : ""}
+                        onChange={(e) =>
+                          updateSegment(
+                            idx,
+                            "date",
+                            e.target.value ? new Date(e.target.value) : null
+                          )
+                        }
+                      />
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </div>
+              {/* Remove Button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="ml-2"
+                onClick={() => removeSegment(idx)}
+                disabled={multiCitySegments.length <= 1}
+                aria-label="Remove segment"
+              >
+                <X className="h-5 w-5 text-text-secondary" />
+              </Button>
             </div>
-          </div>
-        </div>
-
-        {/* Swap Button */}
-        <Button
-          variant="ghost"
-          size="sm"
-          className="p-2 rounded-full hover:bg-hover"
-          onClick={() => {
-            const temp = fromLocation;
-            setFromLocation(toLocation);
-            setToLocation(temp);
-          }}
-        >
-          <ArrowLeftRight className="h-5 w-5 text-text-secondary" />
-        </Button>
-
-        {/* To Location */}
-        <div className="flex-1">
-          <div className="relative">
-            <Input
-              value={toLocation}
-              onChange={(e) => setToLocation(e.target.value)}
-              placeholder="Where to?"
-              className="h-14 px-4 text-base border-input-border focus:border-input-border-focus rounded-sm"
-            />
-            <div className="absolute top-2 left-4 text-xs text-text-secondary">
-              Where to?
-            </div>
-          </div>
-        </div>
-
-        {/* Departure Date */}
-        <div className="flex-1">
+          ))}
           <Button
-            variant="outline"
-            className="h-14 w-full justify-start text-left font-normal border-input-border hover:border-border-hover rounded-sm"
+            className=" mt-2 w-fit bg-blue-500 hover:bg-blue-600 text-white"
+            onClick={addSegment}
           >
-            <Calendar className="mr-2 h-4 w-4 text-text-secondary" />
-            <div className="flex flex-col items-start">
-              <div className="text-xs text-text-secondary">Departure</div>
-              <div className="text-sm text-text-primary">Wed, Oct 1</div>
-            </div>
+            Add Segment
           </Button>
         </div>
-
-        {/* Return Date */}
-        {tripType === "round-trip" && (
+      ) : (
+        <div className="flex items-center gap-4">
+          {/* From Location */}
           <div className="flex-1">
-            <Button
-              variant="outline"
-              className="h-14 w-full justify-start text-left font-normal border-input-border hover:border-border-hover rounded-sm"
-            >
-              <Calendar className="mr-2 h-4 w-4 text-text-secondary" />
-              <div className="flex flex-col items-start">
-                <div className="text-xs text-text-secondary">Return</div>
-                <div className="text-sm text-text-primary">Fri, Oct 3</div>
+            <div className="relative">
+              <Input
+                value={fromLocation}
+                onChange={(e) => setFromLocation(e.target.value)}
+                className="h-14 px-4 text-base border-input-border focus:border-input-border-focus rounded-sm"
+              />
+              <div className="absolute top-4 right-4 text-xs text-text-secondary">
+                <LocateFixed />
               </div>
-            </Button>
+            </div>
           </div>
-        )}
-      </div>
+
+          {/* Swap Button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="p-2 rounded-full hover:bg-hover"
+            onClick={() => {
+              const temp = fromLocation;
+              setFromLocation(toLocation);
+              setToLocation(temp);
+            }}
+          >
+            <ArrowLeftRight className="h-5 w-5 text-text-secondary" />
+          </Button>
+
+          {/* To Location */}
+          <div className="flex-1">
+            <div className="relative">
+              <Input
+                value={toLocation}
+                onChange={(e) => setToLocation(e.target.value)}
+                className="h-14 px-4 text-base border-input-border focus:border-input-border-focus rounded-sm"
+              />
+              <div className="absolute top-4 right-4 text-xs text-text-secondary">
+                <MapPin />
+              </div>
+            </div>
+          </div>
+
+          {/* Departure Date */}
+          <div className="flex-1">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="h-14 w-full justify-start text-left font-normal border-input-border hover:border-border-hover rounded-sm"
+                >
+                  <Calendar className="mr-2 h-4 w-4 text-text-secondary" />
+                  <div className="flex flex-col items-start">
+                    <div className="text-xs text-text-secondary">Departure</div>
+                    <div className="text-sm text-text-primary">
+                      {formatDate(departureDate)}
+                    </div>
+                  </div>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-4 bg-surface">
+                <div className="text-sm text-text-secondary">
+                  <input
+                    type="date"
+                    className="bg-surface "
+                    value={
+                      departureDate ? format(departureDate, "yyyy-MM-dd") : ""
+                    }
+                    onChange={(e) =>
+                      setDepartureDate(
+                        e.target.value ? new Date(e.target.value) : null
+                      )
+                    }
+                  />
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          {/* Return Date */}
+          {tripType === "round-trip" && (
+            <div className="flex-1">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="h-14 w-full justify-start text-left font-normal border-input-border hover:border-border-hover rounded-sm"
+                  >
+                    <Calendar className="mr-2 h-4 w-4 text-text-secondary" />
+                    <div className="flex flex-col items-start">
+                      <div className="text-xs text-text-secondary">Return</div>
+                      <div className="text-sm text-text-primary">
+                        {formatDate(returnDate)}
+                      </div>
+                    </div>
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-4 bg-surface">
+                  <div className="text-sm text-text-secondary">
+                    <input
+                      type="date"
+                      className="bg-surface "
+                      value={returnDate ? format(returnDate, "yyyy-MM-dd") : ""}
+                      onChange={(e) =>
+                        setReturnDate(
+                          e.target.value ? new Date(e.target.value) : null
+                        )
+                      }
+                      min={
+                        departureDate
+                          ? format(departureDate, "yyyy-MM-dd")
+                          : undefined
+                      }
+                    />
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
