@@ -154,6 +154,7 @@ export function FlightSearchForm() {
                   {totalPassengers} <ChevronDown className="h-4 w-4 ml-1" />
                 </Button>
               </PopoverTrigger>
+              {/* passenger popover */}
               <PopoverContent className="w-80 p-4 bg-surface">
                 <div className="space-y-4 ">
                   {/* adults */}
