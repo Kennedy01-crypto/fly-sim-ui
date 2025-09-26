@@ -10,35 +10,51 @@ export function GoogleHeader() {
         <Button variant="ghost" size="sm" className="p-2">
           <Menu className="h-5 w-5 text-text-secondary" />
         </Button>
-        
+
         {/* Google logo area */}
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1">
-              <span className="text-2xl font-normal text-google-blue">G</span>
-              <span className="text-2xl font-normal text-google-red">o</span>
-              <span className="text-2xl font-normal text-google-yellow">o</span>
-              <span className="text-2xl font-normal text-google-blue">g</span>
-              <span className="text-2xl font-normal text-google-green">l</span>
-              <span className="text-2xl font-normal text-google-red">e</span>
+              <a href="#" target="_blank" rel="noopener noreferrer">
+                <img
+                  src="https://img.icons8.com/?size=100&id=V5cGWnc9R4xj&format=png&color=000000"
+                  alt="Google Logo"
+                  className="h-6 w-6"
+                />
+              </a>
             </div>
           </div>
-          
+
           {/* Navigation */}
           <nav className="flex items-center gap-6">
-            <Button variant="ghost" className="text-text-secondary hover:text-text-primary text-sm font-normal">
+            <Button
+              variant="ghost"
+              className="text-text-secondary hover:text-text-primary text-sm font-normal"
+            >
               Travel
             </Button>
-            <Button variant="ghost" className="text-text-secondary hover:text-text-primary text-sm font-normal">
+            <Button
+              variant="ghost"
+              className="text-text-secondary hover:text-text-primary text-sm font-normal"
+            >
               Explore
             </Button>
-            <Button variant="ghost" className="text-primary border-b-2 border-primary font-medium text-sm bg-selected hover:bg-selected">
+            <Button
+              variant="ghost"
+              className="text-primary border-b-2 border-primary font-medium text-sm bg-selected hover:bg-selected"
+            >
               Flights
             </Button>
-            <Button variant="ghost" className="text-text-secondary hover:text-text-primary text-sm font-normal">
+            <Button
+              variant="ghost"
+              className="text-text-secondary hover:text-text-primary text-sm font-normal"
+            >
               Hotels
             </Button>
-            <Button variant="ghost" className="text-text-secondary hover:text-text-primary text-sm font-normal">
+            <Button
+              variant="ghost"
+              className="text-text-secondary hover:text-text-primary text-sm font-normal"
+            >
               Vacation rentals
             </Button>
           </nav>
