@@ -1,4 +1,5 @@
 import { Filter, ChevronDown } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -6,11 +7,26 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { X } from "lucide-react";
+
+const stopOptions = [
+  { label: "Any number of stops", value: "any" },
+  { label: "Non-stop only", value: "nonstop" },
+  { label: "One stop or fewer", value: "1stop" },
+  { label: "Two stops or fewer", value: "2stop" },
+];
 
 export function FlightFilters() {
+  const [selectedStop, setSelectedStop] = useState("any");
+
+  const selectedStopLabel = stopOptions.find(
+    (option) => option.value === selectedStop
+  )?.label;
+
   return (
     <div className="flex items-center mx-auto max-w-6xl gap-1 py-1 px-6 border-b border-border ">
       {/* All filters */}
+      {/* all filters */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
@@ -35,17 +51,70 @@ export function FlightFilters() {
         <DropdownMenuTrigger asChild>
           <Button
             variant="outline"
-            className="border-border hover:border-border-hover text-text-primary rounded-lg px-4 py-2 h-auto"
+            className={`border-border hover:border-border-hover text-text-primary rounded-lg px-4 py-2 h-auto} ${
+              selectedStop === "any"
+                ? "bg-muted font-medium"
+                : "text-text-secondary border-blue-700"
+            }`}
           >
-            Stops
-            <ChevronDown className="h-4 w-4 ml-2" />
+            {selectedStop === "any" ? (
+              <span className="flex gap-3 items-center">
+                Stops
+                <ChevronDown className="h-4 w-4 ml-2" />
+              </span>
+            ) : (
+              <span
+                className="flex gap-3 items-center"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedStop("any");
+                }}
+              >
+                <X className="h-4 w-4 " aria-label="clear stops filter" />
+                {selectedStopLabel}
+              </span>
+            )}
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="bg-surface border-border">
-          <DropdownMenuItem>Any number of stops</DropdownMenuItem>
-          <DropdownMenuItem>Nonstop only</DropdownMenuItem>
-          <DropdownMenuItem>1 stop or fewer</DropdownMenuItem>
-          <DropdownMenuItem>2 stops or fewer</DropdownMenuItem>
+        <DropdownMenuContent className="bg-surface border-border min-w-[260px]">
+          <div className="p-4">
+            <div className="font-medium mb-4 flex items-center justify-between">
+              <span>Stops</span>
+              <button
+                className="text-text-secondary hover:text-text-primary text-sm"
+                onClick={() => setSelectedStop("any")}
+                disabled={selectedStop === "any"}
+              >
+                Clear
+              </button>
+            </div>
+            <div className="flex flex-col gap-2">
+              {stopOptions.map((opt) => (
+                <button
+                  key={opt.value}
+                  className={`flex items-center gap-3 text-left px-2 py-2 rounded hover:bg-muted transition ${
+                    selectedStop === opt.value
+                      ? "bg-muted font-medium"
+                      : "text-text-secondary"
+                  }`}
+                  onClick={() => setSelectedStop(opt.value)}
+                >
+                  <span
+                    className={`inline-block w-4 h-4 rounded-full border mr-2 ${
+                      selectedStop === opt.value
+                        ? "bg-primary border-primary"
+                        : "border-border"
+                    }`}
+                  >
+                    {selectedStop === opt.value && (
+                      <span className="block w-2 h-2 bg-white rounded-full m-1" />
+                    )}
+                  </span>
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
         </DropdownMenuContent>
       </DropdownMenu>
 
