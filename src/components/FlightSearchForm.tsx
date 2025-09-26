@@ -43,7 +43,16 @@ export function FlightSearchForm() {
     adults: 1,
     children: 0,
     infants: 0,
+    infantsOnLap: 0,
   });
+  const totalPassengers =
+    passengers.adults +
+    passengers.children +
+    passengers.infants +
+    passengers.infantsOnLap;
+
+  const totalInfants = passengers.infants + passengers.infantsOnLap;
+
   const [travelClass, setTravelClass] = useState("economy");
   const [fromLocation, setFromLocation] = useState("Nairobi");
   const [toLocation, setToLocation] = useState("Paris");
@@ -142,11 +151,12 @@ export function FlightSearchForm() {
                   className="text-text-secondary hover:text-text-primary text-sm border-0 h-auto p-2"
                 >
                   <Users className="h-4 w-4 mr-2" />
-                  {passengers.adults} <ChevronDown className="h-4 w-4 ml-1" />
+                  {totalPassengers} <ChevronDown className="h-4 w-4 ml-1" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-80 p-4 bg-surface">
                 <div className="space-y-4 ">
+                  {/* adults */}
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="font-medium text-sm">Adults</div>
@@ -160,6 +170,15 @@ export function FlightSearchForm() {
                           setPassengers((p) => ({
                             ...p,
                             adults: Math.max(1, p.adults - 1),
+                            // if reducing adults, also reduce infants if needed
+                            infants: Math.min(
+                              p.infants,
+                              Math.max(1, p.adults - 1)
+                            ),
+                            infantsOnLap: Math.min(
+                              p.infantsOnLap,
+                              Math.max(1, p.adults - 1)
+                            ),
                           }))
                         }
                         disabled={passengers.adults <= 1}
@@ -174,14 +193,19 @@ export function FlightSearchForm() {
                         size="sm"
                         className="h-8 w-8 p-0"
                         onClick={() =>
-                          setPassengers((p) => ({ ...p, adults: p.adults + 1 }))
+                          setPassengers((p) =>
+                            totalPassengers < 9
+                              ? { ...p, adults: p.adults + 1 }
+                              : p
+                          )
                         }
+                        disabled={totalPassengers >= 9}
                       >
                         +
                       </Button>
                     </div>
                   </div>
-
+                  {/* children aged 2 -11 */}
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="font-medium text-sm">Children</div>
@@ -212,17 +236,22 @@ export function FlightSearchForm() {
                         size="sm"
                         className="h-8 w-8 p-0"
                         onClick={() =>
-                          setPassengers((p) => ({
-                            ...p,
-                            children: p.children + 1,
-                          }))
+                          setPassengers((p) =>
+                            totalPassengers < 9
+                              ? {
+                                  ...p,
+                                  children: p.children + 1,
+                                }
+                              : p
+                          )
                         }
+                        disabled={totalPassengers >= 9}
                       >
                         +
                       </Button>
                     </div>
                   </div>
-
+                  {/* infants */}
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="font-medium text-sm">Infants</div>
@@ -251,17 +280,26 @@ export function FlightSearchForm() {
                         size="sm"
                         className="h-8 w-8 p-0"
                         onClick={() =>
-                          setPassengers((p) => ({
-                            ...p,
-                            infants: p.infants + 1,
-                          }))
+                          setPassengers((p) =>
+                            totalPassengers < 9 &&
+                            totalInfants < passengers.adults * 2
+                              ? {
+                                  ...p,
+                                  infants: p.infants + 1,
+                                }
+                              : p
+                          )
+                        }
+                        disabled={
+                          totalPassengers >= 9 ||
+                          totalInfants >= passengers.adults * 2
                         }
                       >
                         +
                       </Button>
                     </div>
                   </div>
-
+                  {/* infants onlap */}
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="font-medium text-sm">Infants</div>
@@ -275,25 +313,31 @@ export function FlightSearchForm() {
                         onClick={() =>
                           setPassengers((p) => ({
                             ...p,
-                            infants: Math.max(0, p.infants - 1),
+                            infantsOnLap: Math.max(0, p.infantsOnLap - 1),
                           }))
                         }
-                        disabled={passengers.infants <= 0}
+                        disabled={passengers.infantsOnLap <= 0}
                       >
                         -
                       </Button>
                       <span className="w-8 text-center text-sm">
-                        {passengers.infants}
+                        {passengers.infantsOnLap}
                       </span>
                       <Button
                         variant="outline"
                         size="sm"
                         className="h-8 w-8 p-0"
                         onClick={() =>
-                          setPassengers((p) => ({
-                            ...p,
-                            infants: p.infants + 1,
-                          }))
+                          setPassengers((p) =>
+                            totalPassengers < 9 &&
+                            totalInfants < passengers.adults * 2
+                              ? { ...p, infantsOnLap: p.infantsOnLap + 1 }
+                              : p
+                          )
+                        }
+                        disabled={
+                          totalPassengers >= 9 ||
+                          totalInfants >= passengers.adults * 2
                         }
                       >
                         +
