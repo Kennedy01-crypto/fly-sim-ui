@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   ArrowLeftRight,
   Calendar,
@@ -23,8 +23,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { format } from "date-fns";
+import { useDebouncedCallback } from "@/hooks/useDebouncedCallBack";
+import { useApi } from "@/context/ApiProvider";
 
 export function FlightSearchForm() {
+  const { searchAirport, loading, error } = useApi();
+  const [airportResulsts, setAirportResults] = useState<any[]>([]);
+
   const [tripType, setTripType] = useState("round-trip");
   const [multiCitySegments, setMultiCitySegments] = useState([
     {
@@ -54,10 +59,83 @@ export function FlightSearchForm() {
   const totalInfants = passengers.infants + passengers.infantsOnLap;
 
   const [travelClass, setTravelClass] = useState("economy");
+  // Input values
   const [fromLocation, setFromLocation] = useState("Nairobi");
   const [toLocation, setToLocation] = useState("Paris");
+  // inpupt dates
   const [departureDate, setDepartureDate] = useState<Date | null>(null);
   const [returnDate, setReturnDate] = useState<Date | null>(null);
+  // Airport search results
+  const [fromAirportResults, setFromAirportResults] = useState<any[]>([]);
+  const [toAirportResults, setToAirportResults] = useState<any[]>([]);
+  // Selected SkyIds
+  const [originSkyId, setOriginSkyId] = useState<string | null>(null);
+  const [destinationSkyId, setDestinationSkyId] = useState<string | null>(null);
+  // Track focus for dropdown visibility
+  const [fromFocused, setFromFocused] = useState(false);
+  const [toFocused, setToFocused] = useState(false);
+  // Debounce refs
+  const fromTimeout = useRef<NodeJS.Timeout | null>(null);
+  const toTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  // Debounced search for fromLocation
+  const [debouncedFromSearch] = useDebouncedCallback(async (value: string) => {
+    try {
+      const res = await searchAirport(value);
+      setFromAirportResults(res.data || res || []);
+      console.log(res);
+    } catch {
+      setFromAirportResults([]);
+    }
+  }, 1000);
+
+  // Debounced search for toLocation
+  const [debouncedToSearch] = useDebouncedCallback(async (value: string) => {
+    try {
+      const res = await searchAirport(value);
+      setToAirportResults(res.data || res || []);
+      console.log(res);
+    } catch {
+      setToAirportResults([]);
+    }
+  }, 1000);
+
+  // handle typing in fromLocation
+  const handleFromChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setFromLocation(value);
+    setOriginSkyId(null);
+    if (value.length < 2) {
+      setFromAirportResults([]);
+      return;
+    }
+    debouncedFromSearch(value);
+  };
+
+  // handle typing in toLocation
+  const handleToChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setToLocation(value);
+    setDestinationSkyId(null);
+    if (value.length < 2) {
+      setToAirportResults([]);
+      return;
+    }
+    debouncedToSearch(value);
+  };
+
+  // Handle selecting an airport from the list
+  const selectFromAirport = (airport: any) => {
+    setFromLocation(airport.name + " (" + airport.iataCode + ")");
+    setOriginSkyId(airport.skyId || airport.id || airport.iataCode);
+    setFromAirportResults([]);
+  };
+  const selectToAirport = (airport: any) => {
+    setToLocation(airport.name + " (" + airport.iataCode + ")");
+    setDestinationSkyId(airport.skyId || airport.id || airport.iataCode);
+    setToAirportResults([]);
+  };
+
   // add segment
   const addSegment = () => {
     setMultiCitySegments([
@@ -69,6 +147,7 @@ export function FlightSearchForm() {
   const removeSegment = (idx: number) => {
     setMultiCitySegments(multiCitySegments.filter((_, i) => i !== idx));
   };
+  // hadler for updating a segment
   const updateSegment = (
     idx: number,
     field: "from" | "to" | "date",
@@ -82,6 +161,15 @@ export function FlightSearchForm() {
   };
   const formatDate = (date: Date | null) => {
     return date ? format(date, "EEE, MMM d") : "Select date";
+  };
+  const handleSearch = async () => {
+    try {
+      const results = await searchAirport(fromLocation);
+      setAirportResults(results);
+      console.log(results);
+    } catch (err: any) {
+      console.error(err);
+    }
   };
 
   return (
@@ -365,11 +453,23 @@ export function FlightSearchForm() {
 
         {/* Search Button */}
         <div className="flex justify-center ">
-          <Button className="bg-primary border border-primary/20 hover:bg-primary-hover text-primary-foreground px-8 py-3 text-base font-medium rounded-md">
+          <Button
+            disabled={loading}
+            onClick={handleSearch}
+            className="bg-primary border border-primary/20 hover:bg-primary-hover text-primary-foreground px-8 py-3 text-base font-medium rounded-md"
+          >
             Search
           </Button>
         </div>
       </div>
+
+      {/* TEST: LOAD && ERRORS */}
+      {loading && (
+        <div className="text-center text-sm mt-2">Searching airports...</div>
+      )}
+      {error && (
+        <div className="text-center text-sm text-red-500 mt-2">{error}</div>
+      )}
 
       {/* Multi-city Segments */}
       {tripType === "multi-city" ? (
@@ -479,9 +579,29 @@ export function FlightSearchForm() {
             <div className="relative">
               <Input
                 value={fromLocation}
-                onChange={(e) => setFromLocation(e.target.value)}
+                onChange={handleFromChange}
+                onFocus={() => setFromFocused(true)}
+                onBlur={() => setTimeout(() => setFromFocused(false), 200)}
+                placeholder="From"
                 className="h-14 px-4 text-base border-input-border focus:border-input-border-focus rounded-sm"
               />
+              {/* Autocomplete dropdown */}
+              {fromFocused && fromAirportResults.length > 0 && (
+                <div className="absolute z-10 left-0 right-0 bg-surface border border-border rounded shadow mt-1 max-h-60 overflow-auto">
+                  {fromAirportResults.map((airport: any) => (
+                    <div
+                      key={airport.id || airport.skyId || airport.iataCode}
+                      className="px-4  py-2 hover:bg-muted cursor-pointer"
+                      onClick={() => selectFromAirport(airport)}
+                    >
+                      <div className="font-medium">{airport.name}</div>
+                      <div className="text-xs text-text-secondary">
+                        {airport.city}, {airport.country}, {airport.iataCode}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
               <div className="absolute top-4 right-4 text-xs text-text-secondary">
                 <LocateFixed />
               </div>
@@ -507,9 +627,29 @@ export function FlightSearchForm() {
             <div className="relative">
               <Input
                 value={toLocation}
-                onChange={(e) => setToLocation(e.target.value)}
+                onChange={handleToChange}
+                onFocus={() => setToFocused(true)}
+                onBlur={() => setTimeout(() => setToFocused(false), 200)}
+                placeholder="To"
                 className="h-14 px-4 text-base border-input-border focus:border-input-border-focus rounded-sm"
               />
+              {/* Autocomplete dropdown */}
+              {toFocused && toAirportResults.length > 0 && (
+                <div className="absolute z-10 left-0 right-0 bg-surface border border-border rounded shadow mt-1 max-h-60 overflow-auto">
+                  {toAirportResults.map((airport: any) => (
+                    <div
+                      key={airport.id || airport.skyId || airport.iataCode}
+                      className="px-4 py-2 hover:bg-muted cursor-pointer"
+                      onClick={() => selectToAirport(airport)}
+                    >
+                      <div className="font-medium">{airport.name}</div>
+                      <div className="text-xs text-text-secondary">
+                        {airport.city}, {airport.country} ({airport.iataCode})
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
               <div className="absolute top-4 right-4 text-xs text-text-secondary">
                 <MapPin />
               </div>
