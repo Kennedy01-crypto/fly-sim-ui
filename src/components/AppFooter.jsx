@@ -17,7 +17,7 @@ const currencies = [
 ];
 
 export function AppFooter() {
-  const [currency, setCurrency] = useState(currencies[4]); // Default to KES
+  const [currency, setCurrency] = useState(currencies[3]); // Default to USD
   const [popoverOpen, setPopoverOpen] = useState(false);
 
   return (
