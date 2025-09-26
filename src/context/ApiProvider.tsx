@@ -1,0 +1,94 @@
+import React, { createContext, useContext, useState } from "react";
+import axios from "axios";
+
+// Define types for each endpoint's data
+type NearbyAirports = any; // Replace with actual type
+type FlightSearchResults = any; // Replace with actual type
+
+interface ApiContextType {
+  getNearByAirports: (params: {
+    lat: number;
+    lng: number;
+  }) => Promise<NearbyAirports>;
+  searchFlights: (params: any) => Promise<FlightSearchResults>;
+  searchAirport: (query: string, locale?: string) => Promise<any>;
+  loading: boolean;
+  error: string | null;
+}
+
+const ApiContext = createContext<ApiContextType | undefined>(undefined);
+
+export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  // Optionally, manage loading/error/data state here
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // helper that wraps aPI calls with loading/error state
+  const apiCall = async <T,>(fn: () => Promise<T>): Promise<T> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await fn();
+      setLoading(false);
+      return result;
+    } catch (err: any) {
+      setLoading(false);
+      setError(err?.message || "An error occurred");
+      throw err;
+    }
+  };
+
+  // Example fetcher for getNearByAirports
+  const getNearByAirports = async (params: { lat: number; lng: number }) => {
+    return apiCall(async () => {
+      // TODO: implement actial api call
+      return {};
+    });
+  };
+
+  // Example fetcher for searchFlights
+  const searchFlights = async (params: any) => {
+    return apiCall(async () => {
+      // TODO: implement actial api call
+      return {};
+    });
+  };
+
+  // search Airport
+  const searchAirport = (query: string, locale = "en-US") => {
+    return apiCall(async () => {
+      const url =
+        "https://sky-scrapper.p.rapidapi.com/api/v1/flights/searchAirport"; //https://sky-scrapper.p.rapidapi.com/api/vi/flights/airport/search
+      const response = await axios.get(url, {
+        params: { query, locale },
+        headers: {
+          "X-RapidAPI-key": import.meta.env.VITE_RAPID_API_KEY,
+          "X-RapidAPI-Host": "sky-scrapper.p.rapidapi.com",
+        },
+      });
+      return response.data;
+    });
+  };
+  return (
+    <ApiContext.Provider
+      value={{
+        getNearByAirports,
+        searchFlights,
+        searchAirport,
+        loading,
+        error,
+      }}
+    >
+      {children}
+    </ApiContext.Provider>
+  );
+};
+
+// Custom hook for easy access
+export const useApi = () => {
+  const ctx = useContext(ApiContext);
+  if (!ctx) throw new Error("useApi must be used within ApiProvider");
+  return ctx;
+};
