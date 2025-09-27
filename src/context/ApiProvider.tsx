@@ -14,6 +14,8 @@ interface ApiContextType {
   searchAirport: (query: string, locale?: string) => Promise<any>;
   loading: boolean;
   error: string | null;
+  flightResults: FlightSearchResults | null;
+  setFlightResults: React.Dispatch<React.SetStateAction<FlightSearchResults | null>>;
 }
 
 const ApiContext = createContext<ApiContextType | undefined>(undefined);
@@ -24,6 +26,7 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
   // Optionally, manage loading/error/data state here
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [flightResults, setFlightResults] = useState<FlightSearchResults | null>(null);
 
   // helper that wraps aPI calls with loading/error state
   const apiCall = async <T,>(fn: () => Promise<T>): Promise<T> => {
@@ -117,6 +120,8 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
         searchAirport,
         loading,
         error,
+        flightResults,
+        setFlightResults,
       }}
     >
       {children}

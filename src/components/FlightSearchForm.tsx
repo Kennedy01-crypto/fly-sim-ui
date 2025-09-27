@@ -25,9 +25,8 @@ import {
 import { format } from "date-fns";
 import { useDebouncedCallback } from "@/hooks/useDebouncedCallBack";
 import { useApi } from "@/context/ApiProvider";
-
 export function FlightSearchForm() {
-  const { searchAirport, loading, error, searchFlights } = useApi();
+  const { searchAirport, loading, error, searchFlights, setFlightResults } = useApi();
   const [airportResults, setAirportResults] = useState<any[]>([]);
 
   const [tripType, setTripType] = useState("round-trip");
@@ -58,7 +57,6 @@ export function FlightSearchForm() {
 
   const totalInfants = passengers.infants + passengers.infantsOnLap;
   // flights and travel class
-  const [flightResults, setFlightResults] = useState<any>(null);
   const [travelClass, setTravelClass] = useState("economy");
   // Input values
   const [fromLocation, setFromLocation] = useState("Nairobi");
@@ -179,6 +177,7 @@ export function FlightSearchForm() {
   const formatDate = (date: Date | null) => {
     return date ? format(date, "EEE, MMM d") : "Select date";
   };
+  // function to hanle  searching of flights
   const handleSearchFlights = async () => {
     if (!originSkyId || !destinationSkyId || !departureDate) {
       // Optionally show a validation error
@@ -786,15 +785,7 @@ export function FlightSearchForm() {
           )}
         </div>
       )}
-      {flightResults && (
-        <div className="mt-8 bg-surface border border-border rounded-md p-4">
-          <h2 className="text-lg font-semibold mb-4">Flight Results</h2>
-          {/* You can customize this rendering as needed */}
-          <pre className="overflow-auto text-xs bg-muted p-2 rounded">
-            {JSON.stringify(flightResults, null, 2)}
-          </pre>
-        </div>
-      )}
+
     </div>
   );
 }
