@@ -52,7 +52,9 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
   const searchFlights = async (params: {
     originSkyId: string;
     destinationSkyId: string;
-    departureDate: string; // Format: YYYY-MM-DD
+    destinationEntityId: string;
+    originEntityId: string;
+    date: string; // Format: YYYY-MM-DD
     returnDate?: string; // Format: YYYY-MM-DD (optional)
     cabinClass?: string;
     adults?: number;
@@ -70,6 +72,8 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
         params: {
           originSkyId: params.originSkyId,
           destinationSkyId: params.destinationSkyId,
+          destinationEntityId: params.destinationEntityId,
+          originEntityId: params.originEntityId,
           cabinClass: params.cabinClass,
           adults: params.adults,
           childrens: params.children,
@@ -78,7 +82,7 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
           currency: params.currency || "USD",
           market: params.market || "en-US",
           countryCode: params.countryCode || "US",
-          departureDate: params.departureDate,
+          date: params.date,
           returnDate: params.returnDate,
         },
         headers: {
