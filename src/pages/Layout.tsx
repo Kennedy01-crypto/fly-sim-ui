@@ -4,10 +4,10 @@ import { Outlet } from "react-router-dom";
 
 const Layout = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <GoogleHeader />
 
-      <main className="pb-8">
+      <main className="pb-8 flex-grow">
         <Outlet />
       </main>
       <AppFooter />
