@@ -65,14 +65,14 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
   }) => {
     return apiCall(async () => {
       const url =
-        "https://sky-scrapper.p.rapidapi.com/api/v2/flights/searchFlights";
+        "https://sky-scrapper.p.rapidapi.com/api/v1/flights/searchFlights";
       const response = await axios.get(url, {
         params: {
           originSkyId: params.originSkyId,
           destinationSkyId: params.destinationSkyId,
           cabinClass: params.cabinClass,
           adults: params.adults,
-          children: params.children,
+          childrens: params.children,
           infants: params.infants,
           sortBy: params.sortBy || "best",
           currency: params.currency || "USD",
@@ -82,7 +82,7 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({
           returnDate: params.returnDate,
         },
         headers: {
-          "X-RapidAPI-Key": import.meta.env.VITE_RAPID_API_KEY,
+          "X-RapidAPI-key": import.meta.env.VITE_RAPID_API_KEY,
           "X-RapidAPI-Host": "sky-scrapper.p.rapidapi.com",
         },
       });
