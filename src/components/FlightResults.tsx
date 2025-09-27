@@ -14,6 +14,7 @@ import {
 import { Link } from "react-router-dom";  
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { useApi } from "@/context/ApiProvider";
 
 interface FlightSegment {
   departure: { time: string; airport: string; code: string };
@@ -283,199 +284,63 @@ function FlightCard({
 }
 
 export function FlightResults() {
-  const flights: FlightCardProps[] = [
-    {
-      airline: "Etihad",
-      logo: "EY",
-      departure: "10:30 AM",
-      arrival: "6:05 AM+1",
-      duration: "18 hr 35 min",
-      stops: "1 stop",
-      stopDetails: "6 hr 40 min AUH",
-      emissions: "709 kg CO2e",
-      emissionChange: "+53% emissions",
-      price: "$927",
-      trip: "round trip",
-      route: "CDG–NBO",
-      segments: [
-        {
-          departure: {
-            time: "18:20",
-            airport: "Jomo Kenyatta International Airport",
-            code: "NBO",
-          },
-          arrival: {
-            time: "00:25+1",
-            airport: "Zayed International Airport",
-            code: "AUH",
-          },
-          duration: "5 hrs 5 min",
-          airline: "Etihad",
-          aircraft: "Airbus A320",
-          flightNumber: "EY 768",
-          class: "Economy",
-        },
-        {
-          departure: {
-            time: "02:30+1",
-            airport: "Zayed International Airport",
-            code: "AUH",
-          },
-          arrival: {
-            time: "08:00+1",
-            airport: "Paris Charles de Gaulle Airport",
-            code: "CDG",
-          },
-          duration: "7 hrs 30 min",
-          airline: "Etihad",
-          aircraft: "Airbus A380",
-          flightNumber: "EY 31",
-          class: "Economy",
-        },
-      ],
-      layover: "2 hrs 5 min layover • Abu Dhabi (AUH) • Overnight layover",
-      amenities: {
-        legroom: "76 cm",
-        wifi: true,
-        power: true,
-        entertainment: true,
-        emissionsEstimate: "307 kg CO2e",
-        contrailWarning: "Medium",
-      },
-    },
-    {
-      airline: "Etihad",
-      logo: "EY",
-      departure: "10:00 PM",
-      arrival: "12:40 PM+1",
-      duration: "13 hr 40 min",
-      stops: "1 stop",
-      stopDetails: "1 hr 55 min AUH",
-      emissions: "652 kg CO2e",
-      emissionChange: "+41% emissions",
-      price: "$927",
-      trip: "round trip",
-      route: "CDG–NBO",
-      segments: [
-        {
-          departure: {
-            time: "22:00",
-            airport: "Paris Charles de Gaulle Airport",
-            code: "CDG",
-          },
-          arrival: {
-            time: "08:55+1",
-            airport: "Zayed International Airport",
-            code: "AUH",
-          },
-          duration: "6 hrs 55 min",
-          airline: "Etihad",
-          aircraft: "Airbus A350",
-          flightNumber: "EY 32",
-          class: "Economy",
-        },
-        {
-          departure: {
-            time: "10:50+1",
-            airport: "Zayed International Airport",
-            code: "AUH",
-          },
-          arrival: {
-            time: "12:40+1",
-            airport: "Jomo Kenyatta International Airport",
-            code: "NBO",
-          },
-          duration: "4 hrs 50 min",
-          airline: "Etihad",
-          aircraft: "Boeing 787",
-          flightNumber: "EY 769",
-          class: "Economy",
-        },
-      ],
-      layover: "1 hr 55 min layover • Abu Dhabi (AUH)",
-      amenities: {
-        legroom: "79 cm",
-        wifi: true,
-        power: true,
-        entertainment: true,
-        emissionsEstimate: "402 kg CO2e",
-        contrailWarning: "Low",
-      },
-    },
-    {
-      airline: "Lufthansa, Etihad",
-      logo: "LH",
-      departure: "6:35 PM",
-      arrival: "12:40 PM+1",
-      duration: "17 hr 5 min",
-      stops: "2 stops",
-      stopDetails: "FRA, AUH",
-      emissions: "694 kg CO2e",
-      emissionChange: "+50% emissions",
-      price: "$1,378",
-      trip: "round trip",
-      route: "CDG–NBO",
-      segments: [
-        {
-          departure: {
-            time: "18:35",
-            airport: "Paris Charles de Gaulle Airport",
-            code: "CDG",
-          },
-          arrival: { time: "20:50", airport: "Frankfurt Airport", code: "FRA" },
-          duration: "1 hr 15 min",
-          airline: "Lufthansa",
-          aircraft: "Airbus A320",
-          flightNumber: "LH 1040",
-          class: "Economy",
-        },
-        {
-          departure: {
-            time: "22:35",
-            airport: "Frankfurt Airport",
-            code: "FRA",
-          },
-          arrival: {
-            time: "08:25+1",
-            airport: "Zayed International Airport",
-            code: "AUH",
-          },
-          duration: "6 hrs 50 min",
-          airline: "Lufthansa",
-          aircraft: "Airbus A350",
-          flightNumber: "LH 630",
-          class: "Economy",
-        },
-        {
-          departure: {
-            time: "10:50+1",
-            airport: "Zayed International Airport",
-            code: "AUH",
-          },
-          arrival: {
-            time: "12:40+1",
-            airport: "Jomo Kenyatta International Airport",
-            code: "NBO",
-          },
-          duration: "4 hrs 50 min",
-          airline: "Etihad",
-          aircraft: "Boeing 787",
-          flightNumber: "EY 769",
-          class: "Economy",
-        },
-      ],
-      layover:
-        "1 hr 45 min layover • Frankfurt (FRA) • 2 hr 25 min layover • Abu Dhabi (AUH)",
-      amenities: {
-        legroom: "79 cm",
-        wifi: false,
-        power: true,
-        entertainment: true,
-        emissionsEstimate: "485 kg CO2e",
-        contrailWarning: "Medium",
-      },
-    },
-  ];
+  const { flightResults } = useApi();
+
+  if (!flightResults || !flightResults.data || !flightResults.data.itineraries) {
+    return (
+      <div className="max-w-6xl mx-auto px-6 py-4 text-center text-text-secondary">
+        No flight results to display.
+      </div>
+    );
+  }
+
+  const formatDuration = (minutes: number) => {
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return `${h}h ${m}m`;
+  };
+
+  const formatTime = (dateTime: string) => {
+    return new Date(dateTime).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  };
+
+  const topFlights = flightResults.data.itineraries.filter((it: any) => it.tags?.includes('cheapest') || it.tags?.includes('shortest'));
+  const otherFlights = flightResults.data.itineraries.filter((it: any) => !it.tags?.includes('cheapest') && !it.tags?.includes('shortest'));
+
+  const mapItineraryToFlightCardProps = (itinerary: any): FlightCardProps => {
+    const outboundLeg = itinerary.legs[0];
+    const inboundLeg = itinerary.legs.length > 1 ? itinerary.legs[1] : null;
+
+    return {
+      airline: outboundLeg.carriers.marketing.map((c: any) => c.name).join(', '),
+      logo: outboundLeg.carriers.marketing[0].alternateId,
+      departure: formatTime(outboundLeg.departure),
+      arrival: formatTime(outboundLeg.arrival),
+      duration: formatDuration(outboundLeg.durationInMinutes),
+      stops: outboundLeg.stopCount === 0 ? "Direct" : `${outboundLeg.stopCount} stop${outboundLeg.stopCount > 1 ? 's' : ''}`,
+      stopDetails: outboundLeg.stopCount > 0 ? outboundLeg.segments.slice(1).map((s: any) => s.origin.displayCode).join(', ') : undefined,
+      price: itinerary.price.formatted,
+      trip: inboundLeg ? "round trip" : "one way",
+      route: `${outboundLeg.origin.displayCode}–${outboundLeg.destination.displayCode}`,
+      emissions: `${Math.round(itinerary.eco?.ecoContenderDelta) || 'N/A'} kg CO₂`,
+      emissionChange: "", // Can be calculated if baseline is known
+      segments: outboundLeg.segments.map((seg: any) => ({
+        departure: { time: formatTime(seg.departure), airport: seg.origin.name, code: seg.origin.displayCode },
+        arrival: { time: formatTime(seg.arrival), airport: seg.destination.name, code: seg.destination.displayCode },
+        duration: formatDuration(seg.durationInMinutes),
+        airline: seg.marketingCarrier.name,
+        aircraft: "Aircraft", // This info is not in the segment object from the provided JSON
+        flightNumber: seg.flightNumber,
+        class: "Economy", // This is hardcoded
+      })),
+      layover: outboundLeg.stopCount > 0 ? `${formatDuration(outboundLeg.durationInMinutes - outboundLeg.segments.reduce((acc: number, seg: any) => acc + seg.durationInMinutes, 0))} layover` : undefined,
+      amenities: undefined, // Not in the provided API response
+    };
+  };
 
   return (
     <div className="max-w-6xl mx-auto px-6">
@@ -501,25 +366,29 @@ export function FlightResults() {
 
       {/* Flight Cards */}
       <div className="space-y-2 py-4">
-        {flights.map((flight, index) => (
-          <FlightCard key={index} {...flight} />
+        {topFlights.map((itinerary: any, index: number) => (
+          <FlightCard key={itinerary.id || index} {...mapItineraryToFlightCardProps(itinerary)} />
         ))}
       </div>
 
-      <div className="flex items-center justify-between py-4 border-b border-border">
-        <div>
-          <h2 className="text-xl font-medium text-text-primary">
-            Other Flights
-          </h2>
-        </div>
-      </div>
+      {otherFlights.length > 0 && (
+        <>
+            <div className="flex items-center justify-between py-4 border-b border-border">
+                <div>
+                <h2 className="text-xl font-medium text-text-primary">
+                    Other Flights
+                </h2>
+                </div>
+            </div>
 
-      {/* Flight Cards */}
-      <div className="space-y-2 py-4">
-        {flights.map((flight, index) => (
-          <FlightCard key={index} {...flight} />
-        ))}
-      </div>
+            {/* Flight Cards */}
+            <div className="space-y-2 py-4">
+                {otherFlights.map((itinerary: any, index: number) => (
+                    <FlightCard key={itinerary.id || index} {...mapItineraryToFlightCardProps(itinerary)} />
+                ))}
+            </div>
+        </>
+      )}
     </div>
   );
 }
